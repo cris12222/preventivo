@@ -1,0 +1,172 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Maps {% endblock %} 
+{% block stylesheets %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0/css/bootstrap.min.css">
+{% endblock stylesheets %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="card">
+    <div class="card-header card-header-primary">
+        <h3 class="card-title">Reportes</h3>
+        <p class="card-category">Exporte sus reportes</p>
+    </div>
+    <div class="card-body">
+        <div id="typography">
+          <form method="post">
+            {% csrf_token %}
+           <div class="row">
+             <div class="col-md-3">
+               <div class="form-group">
+                 <label class="bmd-label-floating">INFORME CUANTITATIVO DE METAS REALIZADAS</label>
+               </div>
+             </div>
+             <div class="col-md-3">
+              <div class="form-group">
+                <label class="bmd-label-floating">Mes</label>
+                 {% render_field fechaform.fecha_inicio required="required" type="date" class="form-control" %}
+              </div>
+            </div>
+             <div class="col-md-3">
+               <div class="form-group">
+                 <label class="bmd-label-floating">Año</label>
+                 {% render_field fechaform.fecha_fin class="form-control" type="date" required="required"  %}
+               </div>
+             </div>
+             <div class="col-md-3">
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary pull-right">Buscar</button>
+              </div>
+            </div>
+           </div>
+           <div class="clearfix"></div>
+         </form>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <iframe id="document-frame" style="display: none; width: 100%; height: 500px;"></iframe>
+              </div>
+              <!-- PDF -->
+              <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Generar PDF desde HTML</title>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+                <script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
+              </head>
+              <body>
+                <button class="btn btn-danger" onclick="generarPDF()">Generar PDF</button>
+                <button class="btn btn-danger" onclick="exportarExcel()">Exportar a Excel</button>
+                  <!-- Contenido HTML que deseas convertir a PDF -->
+                  <div id="contenido">
+                    <head>
+                      <meta charset="UTF-8">
+                      <br><br><br>
+                      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                      <style>
+                        table {
+                          border-collapse: collapse;
+                          width: 100%;
+                        }
+                        th, td {
+                          border: 1px solid #dddddd;
+                          text-align: left;
+                          padding: 8px;
+                        }
+                        th {
+                          background-color: #f2f2f2;
+                        }
+                      </style>
+                    </head>
+                    <body>
+                      <table>
+                        <tr>
+                          <th rowspan="2"><img src="static/assets/img/logodif.png" class="img-fluid float-md-left" width="100" height="150" alt="Logo de AMAC"/></th>
+                          <th colspan="8"><div class="text-center">INFORME CUANTITATIVO DE METAS REALIZADAS</div></th>
+                          <th rowspan="2"><img src="static/assets/img/logocifa.jpg" class="img-fluid float-md-right" width="150" height="150" alt="Logo de AMAC"/></th>
+                        </tr>
+                        <tr>
+                          <th colspan="8"><div class="text-center">Centro De Integracion De La Familia Y El Adolecente</div></th>
+                        </tr>
+                        <tr>
+                          <th colspan="10">
+                            <div class="text">C.I.F.A NORTE-SUR</div>
+                      <div class="text">Programa Preventivo </div>
+                          </th>
+                        </tr>
+                        <tr>
+                          <th>Conf</th>
+                          <th>Cursos</th>
+                          <th>Tema</th>
+                          <th>Fecha</th>
+                          <th>Apoyo</th>
+                          <th>Total Personas</th>
+                          <th>F</th>
+                          <th>M</th>
+                          <th>Escuela</th>
+                          <th>Dirigido</th>
+                        </tr>
+                        {% for d in contex%}
+                        <tr>
+                          <td>{{d.conferencia}}</td>
+                          <td>{{d.cursos}}</td>
+                          <td>{{d.tema}}</td>
+                          <td>{{d.fecha}}</td>
+                          <td>{{d.apoyo}}</td>
+                          <td>{{d.total_personas}}</td>
+                          <td>{{d.cant_mujeres}}</td>
+                          <td>{{d.cant_hombres}}</td>
+                          <td>{{d.escuela}}</td>
+                          <td>{{d.dirigido}}</td>
+                        </tr>
+                        {% endfor %}
+                      </table>
+
+                    </body>
+                  </div>
+                  <script>
+                      function generarPDF() {
+                          // Opciones para la generación del PDF
+                          var opciones = {
+                              margin: 10,
+                              filename: 'INFORME CUANTITATIVO DE METAS REALIZADAS.pdf',
+                              image: { type: 'jpeg', quality: 0.98 },
+                              html2canvas: { scale: 2 },
+                              jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                          };
+
+                          // Selecciona el elemento HTML que deseas convertir a PDF
+                          var contenido = document.getElementById('contenido');
+
+                          // Llama a html2pdf con las opciones
+                          html2pdf(contenido, opciones);
+                      }
+                  </script>
+                  <script>
+                    function exportarExcel() {
+                        // Obtener datos de la tabla
+                        var tabla = document.getElementById('contenido');
+                        var datos = XLSX.utils.table_to_sheet(tabla);
+                
+                        // Crear un libro de Excel
+                        var libro = XLSX.utils.book_new();
+                        XLSX.utils.book_append_sheet(libro, datos, 'Hoja1');
+                
+                        // Descargar el archivo Excel
+                        XLSX.writeFile(libro, 'INFORME CUANTITATIVO DE METAS REALIZADAS.xlsx');
+                    }
+                </script>
+              </body>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+{% block javascripts %}
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.7.0/dist/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.7.0/dist/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock javascripts %}

@@ -1,0 +1,128 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %}
+{% load static %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+    <!-- LOGOS DE CIFA Y PROGRAMA PREVENTIVO Y TITULO DEL AREA-->
+    <div class="row">
+       <div class="col-lg-12">
+            <img src="static/assets/img/logodif.png" class="img-fluid float-md-right" width="200" height="200" alt="Logo de AMAC"/>
+            <div class="col-12 text-center ">
+                <h2><strong>PROGRAMA PREVENTIVO</strong></h2>
+            </div>
+       </div>
+    </div>
+    <!--  -->
+    <div class="row">
+      <div class="col-lg-12 col-md-12">
+        <div class="card">
+          <div class="card-header card-header-tabs card-header-primary">
+            <div class="nav-tabs-navigation ">
+              <div class="nav-tabs-wrapper">
+                <ul class="nav nav-tabs" data-tabs="tabs">
+                  <li class="nav-item">
+                    <a class="nav-link active" href="#conferencias" data-toggle="tab">
+                      <i class="material-icons">rocket</i> CONFERENCIAS ALUMNOS
+                      <div class="ripple-container"></div>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#metas" data-toggle="tab">
+                      <i class="material-icons">checklist</i> CONFERENCIAS PADRES DE FAMILIA
+                      <div class="ripple-container"></div>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#temas" data-toggle="tab">
+                      <i class="material-icons">rocket</i> CONFERENCIAS DOCENTES
+                      <div class="ripple-container"></div>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="card-body">
+            <div class="tab-content">
+              <div class="tab-pane active" id="conferencias">
+                <table class="table">
+                  <tbody>
+                    {% for e in eventos %}
+                      {% if e.dirigido == "Alumno" %}
+                      <tr data-id="task2">
+                          <td>{{e.tema}} --- {{e.escuela}} --- {{e.fecha}} </td>
+                          <td class="td-actions text-right">
+                          </td>
+                        </tr>
+                      {% endif%}
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+
+
+                <!-- CONFERENCIAS DIRIGIDAS A PADRES DE FAMILIA -->
+                <!--<h3>CONFERENCIAS DIRIGIDAS A PADRES DE FAMILIA</h3> -->
+              <div class="tab-pane" id="metas">
+                <table class="table">
+                  <tbody>
+                    {% for e in eventos %}
+                      {% if e.dirigido == "Padre De Familia" %}
+                      <tr data-id="task2">
+                          <td>{{e.tema}} --- {{e.escuela}} --- {{e.fecha}} </td>
+                          <td class="td-actions text-right">
+                          </td>
+                        </tr>
+                      {% endif%}
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+
+                <!-- Docentes -->
+              <div class="tab-pane" id="temas">
+                <table class="table">
+                  <tbody>
+                    {% for e in eventos %}
+                      {% if e.dirigido == "Docente" %}
+                      <tr data-id="task2">
+                          <td>{{e.tema}} --- {{e.escuela}} --- {{e.fecha}} </td>
+                          <td class="td-actions text-right">
+                          </td>
+                        </tr>
+                      {% endif%}
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    </div>
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script>
+    $(document).ready(function() {
+      // Javascript method's body can be found in assets/js/demos.js
+      md.initDashboardPageCharts();
+
+    });
+  </script>
+<script src="{% static 'js/script.js' %}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+{% endblock javascripts %}
